@@ -7,7 +7,7 @@ from aiogram.filters import Command
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiohttp import web
 
-# 1. አዲሱ የቦት ቶክን እና የባለቤት መረጃዎች
+# 1. የቦት ቶክን እና የባለቤት መረጃዎች
 BOT_TOKEN = "8706459996:AAErENBjKn9pm31C57w9xrcWBMYWUvNXU9Q"
 OWNER_NAME = "Ananya Adefris"
 TELEBIRR_NO = "0979152240"
@@ -108,15 +108,15 @@ async def run_lucky_draw(message: types.Message):
     game_state["is_active"] = False
     game_state["selected_numbers"] = {}
 
-# ለRender ሰርቨር ፖርት ማዳመጫ ድረ-ገጽ መፍጠሪያ
+# 🛠 ለRender ሰርቨር ፖርት (Port scan) መጋጨት መፍቻ ድረ-ገጽ
 async def handle(request):
-    return web.Response(text="Bot is running!")
+    return web.Response(text="Bot is running smoothly!")
 
 async def start_bot():
-    # ቦቱን ከበስተጀርባ ያስነሳል
+    # ቦቱን ከበስተጀርባ በፖሊንግ ያስነሳል
     asyncio.create_task(dp.start_polling(bot))
     
-    # የRenderን ፖርት ያዳምጣል
+    # የRenderን የሰርቨር ፖርት ያዳምጣል
     app = web.Application()
     app.router.add_get('/', handle)
     
@@ -126,7 +126,7 @@ async def start_bot():
     site = web.TCPSite(runner, '0.0.0.0', port)
     await site.start()
     
-    # ሰርቨሩ እንዳይዘጋ በቋሚነት እንዲሰራ ያደርጋል
+    # ሰርቨሩ በቋሚነት እንዲቆይ ማድረግ
     while True:
         await asyncio.sleep(3600)
 
