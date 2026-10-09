@@ -5,6 +5,7 @@ from gtts import gTTS
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiohttp import web
 
 # 1. አዲሱ የቦት ቶክን እና የባለቤት መረጃዎች
 BOT_TOKEN = "8706459996:AAErENBjKn9pm31C57w9xrcWBMYWUvNXU9Q"
@@ -15,14 +16,12 @@ CBE_BIRR_NO = "0979152240"
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
-# የጨዋታ መቆጣጠሪያ ዳታ
 game_state = {
     "is_active": False,
     "selected_numbers": {},
     "pool": list(range(1, 97))
 }
 
-# የአማርኛ ድምፅ ማመንጫ ተግባር
 def generate_amharic_voice(text, filename="voice.mp3"):
     try:
         tts = gTTS(text=text, lang='am', slow=False)
@@ -32,7 +31,6 @@ def generate_amharic_voice(text, filename="voice.mp3"):
         print(f"የድምፅ ስህተት: {e}")
         return None
 
-# የ /start ትዕዛዝ ሲላክ
 @dp.message(Command("start"))
 async def start_cmd(message: types.Message):
     user = message.from_user
@@ -51,7 +49,6 @@ async def start_cmd(message: types.Message):
     ])
     await message.answer(text=welcome_text, reply_markup=keyboard)
 
-# የቁልፎች ምላሽ ማስተናገጃ
 @dp.callback_query()
 async def button_click(query: types.CallbackQuery):
     user_id = query.from_user.id
@@ -62,8 +59,6 @@ async def button_click(query: types.CallbackQuery):
             return
             
         game_state["is_active"] = True
-        
-        # ጨዋታ ሲጀመር በአማርኛ ድምፅ እንዲናገር ማድረግ
         voice_text = "ቢንጎ ተጀምሯል! አውቶማቲክ ማጫወቻው ቁጥሮችን እየመረጠ ነው። መልካም ዕድል!"
         voice_file = generate_amharic_voice(voice_text)
         
@@ -74,13 +69,11 @@ async def button_click(query: types.CallbackQuery):
             await query.message.answer_voice(voice=voice_media)
             os.remove(voice_file)
 
-        # አውቶማቲክ ማጫወቻ (Auto Match)
         user_numbers = random.sample(game_state["pool"], 3)
         game_state["selected_numbers"][user_id] = user_numbers
         
         await query.message.answer(f"🎲 አውቶማቲክ ማጫወቻው የመረጣልዎት ቁጥሮች፦ {user_numbers}")
         
-        # ከ3 ሰከንድ በኋላ አውቶማቲክ ዕጣ ማውጣት
         await asyncio.sleep(3)
         await run_lucky_draw(query.message)
 
@@ -93,7 +86,6 @@ async def button_click(query: types.CallbackQuery):
         )
         await query.message.answer(deposit_text)
 
-# አውቶማቲክ የዕጣ ማውጫ ሲስተም
 async def run_lucky_draw(message: types.Message):
     winning_number = random.randint(1, 96)
     await message.answer(f"🔮 የማሽኑ ዕጣ ወጥቷል! የአሸናፊው ቁጥር፦ 【 {winning_number} 】 ነው!")
@@ -105,7 +97,6 @@ async def run_lucky_draw(message: types.Message):
             
     if winners:
         await message.answer("🎉 እንኳን ደስ አለዎት! አሸንፈዋል። ቴሌብርዎ ላይ ብር ገቢ ይደረጋል።")
-        # አሸናፊ ሲኖር በአማርኛ ድምፅ መናገር
         v_file = generate_amharic_voice("እንኳን ደስ አለዎት አሸንፈዋል!")
         if v_file:
             voice_media = types.FSInputFile(v_file)
@@ -114,12 +105,30 @@ async def run_lucky_draw(message: types.Message):
     else:
         await message.answer("😢 ለዚህ ዙር አልደረሶትም! ድጋሚ ይሞክሩ።")
         
-    # ጨዋታውን ለቀጣዩ ዙር ማጽዳት
     game_state["is_active"] = False
     game_state["selected_numbers"] = {}
 
-async def main():
-    await dp.start_polling(bot)
+# ለRender ሰርቨር ፖርት ማዳመጫ ድረ-ገጽ መፍጠሪያ
+async def handle(request):
+    return web.Response(text="Bot is running!")
+
+async def start_bot():
+    # ቦቱን ከበስተጀርባ ያስነሳል
+    asyncio.create_task(dp.start_polling(bot))
+    
+    # የRenderን ፖርት ያዳምጣል
+    app = web.Application()
+    app.router.add_get('/', handle)
+    
+    port = int(os.environ.get("PORT", 8080))
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', port)
+    await site.start()
+    
+    # ሰርቨሩ እንዳይዘጋ በቋሚነት እንዲሰራ ያደርጋል
+    while True:
+        await asyncio.sleep(3600)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(start_bot())
