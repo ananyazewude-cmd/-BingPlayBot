@@ -25,8 +25,9 @@ def generate_amharic_voice(text, filename="voice.mp3"):
 
 @dp.message(Command("start"))
 async def start_cmd(message: types.Message):
-    # 🔗 ትክክለኛው የድረ-ገጽ ሊንክ ማስተካከያ
-    server_url = "https://onrender.com"
+    # 🔗 ለRender ሰርቨር የተስተካከለ ትክክለኛ የዌብ አፕ መገናኛ ሊንክ
+    app_name = os.environ.get('RENDER_EXTERNAL_HOSTNAME', '://onrender.com')
+    server_url = f"https://{app_name}/webapp"
     
     welcome_text = (
         f"👋 Welcome to Beteseb Bingo! Choose an Option below.\n\n"
@@ -44,7 +45,6 @@ async def start_cmd(message: types.Message):
     ])
     await message.answer(text=welcome_text, reply_markup=keyboard)
 
-# 🛠 ሁሉንም ትዕዛዞች በተሟላ መልኩ ምላሽ እንዲሰጡ ማድረግ
 @dp.callback_query()
 async def button_click(query: types.CallbackQuery):
     data = query.data
@@ -63,11 +63,9 @@ async def button_click(query: types.CallbackQuery):
     elif data == "transfer":
         await query.message.answer("🎁 ከዕድል አካውንትዎ ወደ ዋና አካውንትዎ ለማስተላለፍ በቂ ሂሳብ የሎትም።")
     elif data == "invite":
-        await query.message.answer(f"🔗 የእርስዎ መጋበዣ ሊንክ፦\nhttps://t.me_{query.from_user.id}")
+        await query.message.answer(f"🔗 የእርስዎ መጋበዣ ሊንክ፦\nhttps://t.me{query.from_user.id}")
     elif data == "bonus":
         await query.message.answer("💸 በአሁኑ ሰዓት ምንም አይነት ቦነስ የሎትም።")
-    else:
-        await query.message.answer(f"ℹ️ አገልግሎቱ በቅርቡ ይከፈታል!")
 
 @dp.message(lambda msg: msg.web_app_data)
 async def web_app_data_handler(message: types.Message):
@@ -77,8 +75,6 @@ async def web_app_data_handler(message: types.Message):
     if voice_file and os.path.exists(voice_file):
         await message.answer_voice(voice=types.FSInputFile(voice_file))
         os.remove(voice_file)
-    await asyncio.sleep(2)
-    await message.answer("🎉 ጨዋታው ተጠናቋል! አሸናፊዎቹ በዌብ አፑ ላይ ተገልጠዋል።")
 
 async def handle_webapp(request):
     try:
