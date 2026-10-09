@@ -27,86 +27,49 @@ HTML_PAGE = """
     <script src="https://telegram.org"></script>
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #1c1d30; color: white; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
-        
-        /* የላይኛው መረጃዎች ሰሌዳ (Top Stats Dashboard) */
         .stats-container { display: flex; justify-content: space-around; width: 100%; max-width: 450px; background-color: #2e1d62; padding: 8px 4px; border-radius: 6px; margin-bottom: 12px; font-size: 11px; font-weight: bold; text-align: center; }
         .stat-box { display: flex; flex-direction: column; gap: 2px; }
         .stat-val { color: #ffbe00; font-size: 13px; }
-
-        /* ዋናው የጨዋታ አቀማመጥ (Split Board Layout) */
         .main-layout { display: flex; gap: 8px; width: 100%; max-width: 450px; }
         .left-board { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; background-color: #272848; padding: 6px; border-radius: 8px; width: 45%; }
         .right-board { display: flex; flex-direction: column; width: 55%; gap: 10px; background-color: #232442; padding: 10px; border-radius: 8px; align-items: center; }
-
-        /* የግራው የቁጥር ቃና ሰሌዳ */
-        .grid-header { background-color: #00a8ff; color: white; font-weight: bold; font-size: 11px; padding: 4px 0; border-radius: 3px; text-align: center; }
-        .grid-header.i { background-color: #9b59b6; }
-        .grid-header.n { background-color: #e67e22; }
-        .grid-header.g { background-color: #2ecc71; }
-        .grid-header.o { background-color: #e74c3c; }
         .num-btn { background-color: #3d3e6a; color: #b3b5cb; border: none; font-size: 10px; font-weight: bold; padding: 5px 0; border-radius: 3px; text-align: center; }
         .num-btn.taken { background-color: #e67e22; color: white; }
-
-        /* የቀኝ የቢንጎ ካርታ (Cartela Board) */
         .called-ball-display { background-color: #ffbe00; color: #1c1d30; font-size: 24px; font-weight: bold; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.3); margin-bottom: 5px; }
         .switch-container { display: flex; align-items: center; justify-content: space-between; width: 90%; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
-        
-        /* Bingo Letters Display */
         .bingo-letters { display: flex; gap: 3px; width: 100%; justify-content: center; margin-bottom: 4px; }
         .b-let { font-size: 14px; font-weight: bold; padding: 4px 10px; border-radius: 3px; background-color: #00a8ff; color: white; }
-        .b-let.i { background-color: #9b59b6; }
-        .b-let.n { background-color: #e67e22; }
-        .b-let.g { background-color: #2ecc71; }
-        .b-let.o { background-color: #e74c3c; }
-
-        /* Cartela Matrix Numbers */
         .cartela-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; width: 100%; }
-        .cart-cell { background-color: white; color: #1c1d30; font-size: 14px; font-weight: bold; padding: 8px 0; border-radius: 4px; text-align: center; box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2); }
-        .cart-cell.matched { background-color: #2ecc71 !important; color: white; }
+        .cart-cell { background-color: white; color: #1c1d30; font-size: 14px; font-weight: bold; padding: 8px 0; border-radius: 4px; text-align: center; }
         .cart-cell.star { background-color: #2ecc71 !important; color: #ffbe00; font-size: 16px; }
         .cartela-tag { font-size: 10px; color: #ffbe00; margin-top: 4px; }
-
-        /* የታችኞቹ ዋና ቁልፎች (Action Buttons) */
         .bottom-actions { display: flex; gap: 8px; width: 100%; max-width: 450px; margin-top: 12px; }
         .act-btn { flex: 1; border: none; padding: 10px 0; font-size: 13px; font-weight: bold; border-radius: 5px; color: white; cursor: pointer; }
         .act-btn.leave { background-color: #ff4757; }
         .act-btn.refresh { background-color: #e67e22; }
-        .act-btn.main-auto { background-color: #57606f; background: linear-gradient(135deg, #e67e22, #f39c12); font-size: 14px; padding: 12px 0; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .act-btn.main-auto { background-color: #57606f; background: linear-gradient(135deg, #e67e22, #f39c12); font-size: 14px; padding: 12px 0; border-radius: 6px; width: 100%; }
     </style>
 </head>
 <body>
-
-    <!-- 1. የላይኛው መረጃ ሰሌዳ -->
     <div class="stats-container">
         <div class="stat-box"><div>Game ID</div><div class="stat-val">BX-9972</div></div>
         <div class="stat-box"><div>Players</div><div class="stat-val">335</div></div>
         <div class="stat-box"><div>Bet</div><div class="stat-val">10</div></div>
         <div class="stat-box"><div>Derash</div><div class="stat-val">2680</div></div>
-        <div class="stat-box"><div>Called</div><div class="stat-val" id="calledCount">0</div></div>
+        <div class="stat-box"><div>Called</div><div class="stat-val">0</div></div>
     </div>
-
-    <!-- 2. ዋናው ሰሌዳ (Main Split Layout) -->
     <div class="main-layout">
-        
-        <!-- የግራ ሰሌዳ (ቁጥሮች) -->
         <div class="left-board" id="leftBoard"></div>
-
-        <!-- የቀኝ ሰሌዳ (ቢንጎ ካርታ) -->
         <div class="right-board">
             <div class="called-ball-display" id="ballDisplay">--</div>
             <div class="switch-container"><span>Automatic</span><span style="color:#2ecc71;">● ON</span></div>
-            
             <div class="bingo-letters">
-                <div class="b-let">B</div><div class="b-let i">I</div><div class="b-let n">N</div><div class="b-let g">G</div><div class="b-let o">O</div>
+                <div class="b-let">B</div><div class="b-let">I</div><div class="b-let">N</div><div class="b-let">G</div><div class="b-let">O</div>
             </div>
-
-            <!-- የቢንጎ መጫወቻ 5 መስመር ቁጥሮች (Cartela Matrix) -->
             <div class="cartela-grid" id="cartelaMatrix"></div>
             <div class="cartela-tag">Cartela No: 131</div>
         </div>
     </div>
-
-    <!-- 3. የታችኞቹ መቆጣጠሪያ ቁልፎች -->
     <div class="bottom-actions">
         <button class="act-btn leave" onclick="tg.close()">Leave</button>
         <button class="act-btn refresh" onclick="location.reload()">Refresh</button>
@@ -114,50 +77,29 @@ HTML_PAGE = """
     <div style="width:100%; max-width:450px; margin-top:8px;">
         <button class="act-btn main-auto" onclick="startAutomaticDraw()">Automatic</button>
     </div>
-
     <script>
         const tg = window.Telegram.WebApp; tg.expand();
-        
-        // የግራ ቁጥር ሰሌዳ ማመንጨት (1-75)
         const leftBoard = document.getElementById('leftBoard');
-        const prefixes = ['B', 'I', 'N', 'G', 'O'];
-        const takenNumbers =; // ለማስዋብ የተያዙ ቁጥሮች
-
+        const takenNumbers =;
         for (let row = 0; row < 15; row++) {
             for (let col = 0; col < 5; col++) {
                 const num = col * 15 + (row + 1);
                 const btn = document.createElement('div');
-                btn.className = 'num-btn';
-                btn.innerText = num;
-                btn.id = 'num-' + num;
+                btn.className = 'num-btn'; btn.innerText = num;
                 if (takenNumbers.includes(num)) btn.classList.add('taken');
                 leftBoard.appendChild(btn);
             }
         }
-
-        // የቀኝ ቢንጎ ካርታ (Cartela 5x5 Matrix) ማመንጨት
         const cartelaGrid = document.getElementById('cartelaMatrix');
-        const myCartelaNumbers = [
-            14, 24, 38, 49, 67,
-            6,  21, 40, 59, 61,
-            2,  20, '⭐', 48, 72,
-            9,  18, 45, 54, 73,
-            7,  29, 42, 58, 74
-        ];
-
-        myCartelaNumbers.forEach((val, idx) => {
-            const cell = document.createElement('div');
-            cell.className = 'cart-cell';
-            cell.innerText = val;
+        const myCartelaNumbers = [14, 24, 38, 49, 67, 6, 21, 40, 59, 61, 2, 20, '⭐', 48, 72, 9, 18, 45, 54, 73, 7, 29, 42, 58, 74];
+        myCartelaNumbers.forEach((val) => {
+            const cell = document.createElement('div'); cell.className = 'cart-cell'; cell.innerText = val;
             if (val === '⭐') cell.classList.add('star');
-            cell.id = 'cart-' + val;
             cartelaGrid.appendChild(cell);
         });
-
-        // አውቶማቲክ ማጫወቻ ትዕዛዝ ሲነካ ወደ ቦቱ ዳታ መላክ
         function startAutomaticDraw() {
-            tg.sendData(JSON.stringify({action: "start_automatic", cartela: myCartelaNumbers.filter(n => n !== '⭐')}));
-            tg.showAlert("አውቶማቲክ ማጫወቻው ተነስቷል! እባክዎ ዕጣዎችን ይከታተሉ።");
+            tg.sendData(JSON.stringify({action: "start_automatic", cartela: [14, 24, 38, 49, 67, 6, 21, 40, 59, 61, 2, 20, 48, 72, 9, 18, 45, 54, 73, 7, 29, 42, 58, 74]}));
+            tg.showAlert("አውቶማቲክ ማጫወቻው ተነስቷል!");
         }
     </script>
 </body>
@@ -169,9 +111,10 @@ def generate_amharic_voice(text, filename="voice.mp3"):
         tts = gTTS(text=text, lang='am', slow=False)
         tts.save(filename)
         return filename
-    except Exception: return None
+    except Exception:
+        return None
 
-# 3. የቤተሰብ ቢንጎ ማራኪ ሜኑ ቁልፎች
+# 3. የቤተሰብ ቢንጎ ማራኪ ሜኑ ቁልፎች (Inline Buttons)
 @dp.message(Command("start"))
 async def start_cmd(message: types.Message):
     server_url = f"https://{os.environ.get('RENDER_EXTERNAL_HOSTNAME', '://onrender.com')}/webapp"
@@ -192,6 +135,46 @@ async def start_cmd(message: types.Message):
     ])
     await message.answer(text=welcome_text, reply_markup=keyboard)
 
+# 4. የቁልፎች ተግባር ምላሽ ማስተናገጃ (Indentation የተስተካከለበት ቦታ)
 @dp.callback_query()
 async def button_click(query: types.CallbackQuery):
-    if query.data == "deposit":
+    data = query.data
+    if data == "deposit":
+        await query.message.answer(f"💰 ገንዘብ ለማስገባት፦\n\n▪️ ቴሌብር፦ {TELEBIRR_NO}\n▪️ ሲቢኢ ብር፦ {CBE_BIRR_NO}\n▪️ ስም፦ {OWNER_NAME}")
+    elif data == "balance":
+        await query.message.answer("💵 የአሁኑ ሂሳብዎ 200 ETB ነው።")
+    else:
+        await query.message.answer(f"ℹ️ ይህ {data} አገልግሎት በቅርቡ ይከፈታል!")
+
+# 5. አውቶማቲክ ማጫወቻው ዳታ ሲልክ ዕጣ ማውጣት
+@dp.message(lambda msg: msg.web_app_data)
+async def web_app_data_handler(message: types.Message):
+    import json
+    data = json.loads(message.web_app_data.data)
+    cartela_numbers = data.get("cartela", [])
+    
+    voice_text = "ቢንጎ ተጀምሯል! አውቶማቲክ ማጫወቻው ቁጥሮችን እየመረጠ ነው። መልካም ዕድል!"
+    voice_file = generate_amharic_voice(voice_text)
+    await message.answer("🗣 ጨዋታው ተጀምሯል! የአማርኛ ድምፅ መልዕክት እየተላከ ነው...")
+    if voice_file and os.path.exists(voice_file):
+        await message.answer_voice(voice=types.FSInputFile(voice_file))
+        os.remove(voice_file)
+
+    drawn_numbers = []
+    for i in range(1, 6):
+        await asyncio.sleep(4)
+        lucky_pick = random.randint(1, 75)
+        drawn_numbers.append(lucky_pick)
+        
+        prefix = 'B' if lucky_pick <= 15 else 'I' if lucky_pick <= 30 else 'N' if lucky_pick <= 45 else 'G' if lucky_pick <= 60 else 'O'
+        ball_text = f"{prefix}-{lucky_pick}"
+        
+        await message.answer(f"🔮 ዙር {i} ዕጣ ወጣ! የወጣው ኳስ፦ 【 {ball_text} 】 ነው!")
+        
+        v_ball = generate_amharic_voice(f"የወጣው ቁጥር {lucky_pick}")
+        if v_ball and os.path.exists(v_ball):
+            await message.answer_voice(voice=types.FSInputFile(v_ball))
+            os.remove(v_ball)
+
+    matches = set(cartela_numbers).intersection(set(drawn_numbers))
+    if len(matches) >= 1:
