@@ -7,7 +7,7 @@ from aiogram.filters import Command
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 # 1. አዲሱ የቦት ቶክን እና የባለቤት መረጃዎች
-BOT_TOKEN = "8706459996:AAGldV22qcQZHOcUDs6ugOf9D_D3KafqyiY"
+BOT_TOKEN = 8706459996:AAErENBjKn9pm31C57w9xrcWBMYWUvNXU9Q
 OWNER_NAME = "Ananya Adefris"
 TELEBIRR_NO = "0979152240"
 CBE_BIRR_NO = "0979152240"
